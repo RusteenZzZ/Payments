@@ -13,6 +13,6 @@ public class Producer {
     }
 
     public void reply(String respond){
-        template.convertAndSend(Config.EXCHANGE_TOPIC, Config.ROUTING_KEY, respond);
+        template.convertAndSend(ReplyConfig.EXCHANGE_TOPIC, ReplyConfig.ROUTING_KEY, respond);
     }
 }
