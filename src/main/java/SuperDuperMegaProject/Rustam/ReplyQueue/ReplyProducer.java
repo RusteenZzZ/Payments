@@ -4,11 +4,11 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Producer {
+public class ReplyProducer {
 
     private final RabbitTemplate template;
 
-    public Producer(RabbitTemplate template){
+    public ReplyProducer(RabbitTemplate template){
         this.template = template;
     }
 

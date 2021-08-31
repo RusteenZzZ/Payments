@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class Config {
+public class ReplyConfig {
 
     public static final String QUEUE_NAME = "REPLY_QUEUE";
     public static final String EXCHANGE_TOPIC = "REPLY_EXCHANGE";
@@ -18,17 +18,17 @@ public class Config {
 
     @Bean
     public org.springframework.amqp.core.Queue queue() {
-        return new org.springframework.amqp.core.Queue(this.QUEUE_NAME);
+        return new org.springframework.amqp.core.Queue(ReplyConfig.QUEUE_NAME);
     }
 
     @Bean
     public TopicExchange topicExchange(){
-        return new TopicExchange(this.EXCHANGE_TOPIC);
+        return new TopicExchange(ReplyConfig.EXCHANGE_TOPIC);
     }
 
     @Bean
     public Binding binding(Queue queue, TopicExchange topicExchange){
-        return BindingBuilder.bind(queue).to(topicExchange).with(this.ROUTING_KEY);
+        return BindingBuilder.bind(queue).to(topicExchange).with(ReplyConfig.ROUTING_KEY);
     }
 
     @Bean
