@@ -31,7 +31,6 @@ public class Config {
         return new Queue(Config.COMMAND_QUEUE_NAME);
     }
 
-
     @Bean
     public TopicExchange topicExchangeReply(){
         return new TopicExchange(Config.REPLY_EXCHANGE_TOPIC);
