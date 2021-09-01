@@ -3,7 +3,7 @@ package SuperDuperMegaProject.Rustam.CommandQueue;
 import java.util.List;
 
 public class CommandQueueMessage {
-    Long userId;
-    List<Long> productIds;
-    List<Integer> amountOfProducts;
+    public Long userId;
+    public List<Long> productIds;
+    public List<Integer> amountOfProducts;
 }
