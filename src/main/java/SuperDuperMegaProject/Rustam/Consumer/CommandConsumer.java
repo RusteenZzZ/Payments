@@ -1,12 +1,14 @@
-package SuperDuperMegaProject.Rustam.CommandQueue;
+package SuperDuperMegaProject.Rustam.Consumer;
 
 import SuperDuperMegaProject.Rustam.DTO.Product;
 import SuperDuperMegaProject.Rustam.DTO.User;
 import SuperDuperMegaProject.Rustam.Entity.Transaction;
 import SuperDuperMegaProject.Rustam.FeignClient.ProductFeign;
 import SuperDuperMegaProject.Rustam.FeignClient.UserFeign;
-import SuperDuperMegaProject.Rustam.ReplyQueue.ReplyProducer;
-import SuperDuperMegaProject.Rustam.ReplyQueue.ReplyType;
+//import SuperDuperMegaProject.Rustam.ReplyQueue.ReplyProducer;
+import SuperDuperMegaProject.Rustam.Constants.ReplyType;
+import SuperDuperMegaProject.Rustam.QueueConfiguration.Config;
+import SuperDuperMegaProject.Rustam.QueueMessage.CommandQueueMessage;
 import SuperDuperMegaProject.Rustam.Service.TransactionService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
@@ -21,7 +23,7 @@ public class CommandConsumer {
     private final TransactionService transactionService;
     private final UserFeign userFeign;
     private final ProductFeign productFeign;
-    private final ReplyProducer replyProducer;
+    //    private final ReplyProducer replyProducer;
     private final ReplyType replyType;
 
     private Optional<User> user;
@@ -36,17 +38,17 @@ public class CommandConsumer {
             TransactionService transactionService,
             UserFeign userFeign,
             ProductFeign productFeign,
-            ReplyProducer replyProducer,
+//            ReplyProducer replyProducer,
             ReplyType replyType
     ){
         this.transactionService = transactionService;
         this.userFeign = userFeign;
         this.productFeign = productFeign;
-        this.replyProducer = replyProducer;
+//        this.replyProducer = replyProducer;
         this.replyType = replyType;
     }
 
-    @RabbitListener(queues = CommandConfig.QUEUE_NAME)
+    @RabbitListener(queues = Config.COMMAND_QUEUE_NAME)
     public void takeCommand(CommandQueueMessage message){
         this.userId = message.userId;
         this.productIds = message.productIds;
@@ -57,14 +59,14 @@ public class CommandConsumer {
         // ERROR: User doesn't exist
         this.createTransactionRecords(this.replyType.ERROR);
         if(user.isEmpty()){
-            this.replyProducer.reply(this.replyType.ERROR);
+//            this.replyProducer.reply(this.replyType.ERROR);
             return;
         }
 
         // ERROR: Not matching numbers of products and amounts
         this.createTransactionRecords(this.replyType.ERROR);
         if(this.productIds.size() != this.amountOfProducts.size()){
-            this.replyProducer.reply(this.replyType.ERROR);
+//            this.replyProducer.reply(this.replyType.ERROR);
             return;
         }
 
@@ -78,14 +80,14 @@ public class CommandConsumer {
             // ERROR: Certain product doesn't exist
             this.createTransactionRecords(this.replyType.ERROR);
             if(product.isEmpty()){
-                this.replyProducer.reply(this.replyType.ERROR);
+//                this.replyProducer.reply(this.replyType.ERROR);
                 return;
             }
 
             // FAIL: Not sufficient amount of products on the storage
             this.createTransactionRecords(this.replyType.FAIL);
             if(this.amountOfProducts.get(i) > product.get().amount){
-                this.replyProducer.reply(this.replyType.FAIL);
+//                this.replyProducer.reply(this.replyType.FAIL);
                 return;
             }
 
@@ -95,13 +97,13 @@ public class CommandConsumer {
         // FAIL: Not sufficient balance of user
         this.createTransactionRecords(this.replyType.FAIL);
         if(this.user.get().balance < price){
-            this.replyProducer.reply(this.replyType.FAIL);
+//            this.replyProducer.reply(this.replyType.FAIL);
             return;
         }
 
         // SUCCESS: Everything is fine
         this.createTransactionRecords(this.replyType.SUCCESS);
-        this.replyProducer.reply(this.replyType.SUCCESS);
+//        this.replyProducer.reply(this.replyType.SUCCESS);
     }
 
     private void createTransactionRecords(String respond){

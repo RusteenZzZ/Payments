@@ -1,4 +1,4 @@
-package SuperDuperMegaProject.Rustam.ReplyQueue;
+package SuperDuperMegaProject.Rustam.Constants;
 
 import org.springframework.context.annotation.Configuration;
 

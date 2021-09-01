@@ -1,4 +1,4 @@
-package SuperDuperMegaProject.Rustam.ReplyQueue;
+package SuperDuperMegaProject.Rustam.QueueMessage;
 
 public class ReplyQueueMessage {
 
