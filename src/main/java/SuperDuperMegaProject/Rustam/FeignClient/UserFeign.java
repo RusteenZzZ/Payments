@@ -16,7 +16,7 @@ import java.util.Optional;
 public interface UserFeign {
 
     @RequestMapping(method = RequestMethod.GET, value = "/user/{id}")
-    Optional<User> getUser(@PathVariable("id") Long id);
+    ResponseEntity<?> getUser(@PathVariable("id") Long id);
 
     @RequestMapping(method = RequestMethod.POST, value = "/user/update")
     ResponseEntity<?> updateBalance(@Valid @RequestBody UpdateBalanceRequest request);

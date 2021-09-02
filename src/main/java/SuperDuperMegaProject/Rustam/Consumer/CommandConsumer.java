@@ -28,10 +28,6 @@ public class CommandConsumer {
     private final ReplyProducer replyProducer;
     private final ReplyType replyType;
 
-    private Optional<User> user;
-    private List<Product> products;
-
-    private Double balance;
     private Long userId;
     private List<Long> productIds;
     private List<Integer> amountOfProducts;
@@ -56,13 +52,21 @@ public class CommandConsumer {
         this.productIds = message.productIds;
         this.amountOfProducts = message.amountOfProducts;
 
-        this.user = this.userFeign.getUser(this.userId);
+        ResponseEntity<?> userResponse = this.userFeign.getUser(this.userId);
 
         // ERROR: User doesn't exist
-        this._createErrorTransactionRecords();
-        if(user.isEmpty()){
+        if(userResponse.getStatusCode().is4xxClientError()){
             this.replyProducer.reply(this.replyType.ERROR);
-            return;
+            throw new Exception("Get user: Client Error");
+        }else if (userResponse.getStatusCode().is5xxServerError()){
+            this.replyProducer.reply(this.replyType.ERROR);
+            throw new Exception("Get user: Server error");
+        }
+
+        User user = (User) userResponse.getBody();
+
+        if(user == null){
+            throw new Exception("user from response is pointing to null");
         }
 
         // ERROR: Not matching numbers of products and amounts
@@ -98,7 +102,7 @@ public class CommandConsumer {
 
         // FAIL: Not sufficient balance of user
         this._createFailTransactionRecords();
-        if(this.user.get().balance < price){
+        if(user.balance < price){
             this.replyProducer.reply(this.replyType.FAIL);
             return;
         }
