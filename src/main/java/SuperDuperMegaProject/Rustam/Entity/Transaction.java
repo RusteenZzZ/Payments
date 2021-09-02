@@ -46,13 +46,13 @@ public class Transaction {
 
     @Column(
             name = "amount",
-            nullable = false
+            nullable = true
     )
     private Integer amount;
 
     @Column(
             name = "price",
-            nullable = false
+            nullable = true
     )
     private Double price;
 
