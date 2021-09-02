@@ -19,4 +19,7 @@ public class UpdateBalanceRequest {
 
     @NotBlank
     String productId;
+
+    @NotBlank
+    String amountOfProducts;
 }

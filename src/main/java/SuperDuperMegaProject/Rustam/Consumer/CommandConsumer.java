@@ -1,6 +1,7 @@
 package SuperDuperMegaProject.Rustam.Consumer;
 
 import SuperDuperMegaProject.Rustam.DTO.Product;
+import SuperDuperMegaProject.Rustam.DTO.UpdateBalanceRequest;
 import SuperDuperMegaProject.Rustam.DTO.User;
 import SuperDuperMegaProject.Rustam.Entity.Transaction;
 import SuperDuperMegaProject.Rustam.FeignClient.ProductFeign;
@@ -11,6 +12,7 @@ import SuperDuperMegaProject.Rustam.QueueConfiguration.Config;
 import SuperDuperMegaProject.Rustam.QueueMessage.CommandQueueMessage;
 import SuperDuperMegaProject.Rustam.Service.TransactionService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -49,7 +51,7 @@ public class CommandConsumer {
     }
 
     @RabbitListener(queues = Config.COMMAND_QUEUE_NAME)
-    public void takeCommand(CommandQueueMessage message){
+    public void takeCommand(CommandQueueMessage message) throws Exception {
         this.userId = message.userId;
         this.productIds = message.productIds;
         this.amountOfProducts = message.amountOfProducts;
@@ -103,6 +105,22 @@ public class CommandConsumer {
 
         // SUCCESS: Everything is fine
         this._createSuccessTransactionRecords();
+
+        for(int i = 0; i < this.productIds.size(); i++){
+            ResponseEntity<?> result = this.userFeign.updateBalance(
+                    new UpdateBalanceRequest(
+                            this.userId + "",
+                            this.productIds.get(i) + "",
+                            this.amountOfProducts.get(i) + ""
+                    )
+            );
+            if(result.getStatusCode().is4xxClientError()){
+                throw new Exception("Update user balance: Client error");
+            }else if (result.getStatusCode().is5xxServerError()){
+                throw new Exception("Update user balance: Server error");
+            }
+        }
+
         this.replyProducer.reply(this.replyType.SUCCESS);
     }
 
