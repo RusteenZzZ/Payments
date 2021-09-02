@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class CommandConsumer {
@@ -31,6 +30,8 @@ public class CommandConsumer {
     private Long userId;
     private List<Long> productIds;
     private List<Integer> amountOfProducts;
+
+    private List<Product> products;
 
     public CommandConsumer(
             TransactionService transactionService,
@@ -70,39 +71,51 @@ public class CommandConsumer {
         }
 
         // ERROR: Not matching numbers of products and amounts
-        this._createErrorTransactionRecords();
         if(this.productIds.size() != this.amountOfProducts.size()){
+            this._createErrorTransactionRecords();
             this.replyProducer.reply(this.replyType.ERROR);
             return;
         }
 
-        Optional<Product> product;
+        Product product;
         Double price = 0D;
 
         for(int i = 0; i < this.productIds.size(); i++){
 
-            product = this.productFeign.getProduct(productIds.get(i));
+            ResponseEntity<?> productResponse = this.productFeign.getProduct(productIds.get(i));
 
             // ERROR: Certain product doesn't exist
-            this._createErrorTransactionRecords();
-            if(product.isEmpty()){
+            if(productResponse.getStatusCode().is4xxClientError()){
+                this._createErrorTransactionRecords();
                 this.replyProducer.reply(this.replyType.ERROR);
-                return;
+                throw new Exception("Get product: Client Error");
+            }else if (productResponse.getStatusCode().is5xxServerError()){
+                this._createErrorTransactionRecords();
+                this.replyProducer.reply(this.replyType.ERROR);
+                throw new Exception("Get product: Server error");
+            }
+
+            product = (Product) productResponse.getBody();
+
+            if(product == null){
+                throw new Exception("product form response is pointing to null");
             }
 
             // FAIL: Not sufficient amount of products on the storage
-            this._createFailTransactionRecords();
-            if(this.amountOfProducts.get(i) > product.get().amount){
+            if(this.amountOfProducts.get(i) > product.amount){
+                this._createFailTransactionRecords();
                 this.replyProducer.reply(this.replyType.FAIL);
                 return;
             }
 
-            price += product.get().price * this.amountOfProducts.get(i);
+            price += product.price * this.amountOfProducts.get(i);
+
+            this.products.add(product);
         }
 
         // FAIL: Not sufficient balance of user
-        this._createFailTransactionRecords();
         if(user.balance < price){
+            this._createFailTransactionRecords();
             this.replyProducer.reply(this.replyType.FAIL);
             return;
         }
@@ -144,18 +157,14 @@ public class CommandConsumer {
     }
 
     private void _createFailTransactionRecords(){
-        Optional<Product> product;
-
         for(int i = 0; i < this.productIds.size(); i++){
-            product = this.productFeign.getProduct(productIds.get(i));
-
             this.transactionService.addTransaction(
                     new Transaction(
                             this.userId,
                             new Date(),
                             this.productIds.get(i),
                             this.amountOfProducts.get(i),
-                            product.get().price * this.amountOfProducts.get(i),
+                            this.products.get(i).price * this.amountOfProducts.get(i),
                             this.replyType.FAIL
                     )
             );
@@ -163,18 +172,14 @@ public class CommandConsumer {
     }
 
     private void _createSuccessTransactionRecords(){
-        Optional<Product> product;
-
         for(int i = 0; i < this.productIds.size(); i++){
-            product = this.productFeign.getProduct(productIds.get(i));
-
             this.transactionService.addTransaction(
                     new Transaction(
                             this.userId,
                             new Date(),
                             this.productIds.get(i),
                             this.amountOfProducts.get(i),
-                            product.get().price * this.amountOfProducts.get(i),
+                            this.products.get(i).price * this.amountOfProducts.get(i),
                             this.replyType.SUCCESS
                     )
             );
