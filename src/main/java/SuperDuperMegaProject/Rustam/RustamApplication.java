@@ -11,5 +11,4 @@ public class RustamApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(RustamApplication.class, args);
 	}
-
 }

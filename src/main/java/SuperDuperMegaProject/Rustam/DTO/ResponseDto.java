@@ -2,8 +2,7 @@ package SuperDuperMegaProject.Rustam.DTO;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import javax.validation.constraints.NotBlank;
+import org.springframework.http.HttpStatus;
 
 @AllArgsConstructor
 @Getter
@@ -12,9 +11,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UpdateBalanceRequest {
-
-    String userId;
-    String productId;
-    String amount;
+public class ResponseDto {
+    HttpStatus status;
+    Object body;
 }

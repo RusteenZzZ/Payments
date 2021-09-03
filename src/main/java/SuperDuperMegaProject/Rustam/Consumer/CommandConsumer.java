@@ -1,6 +1,7 @@
 package SuperDuperMegaProject.Rustam.Consumer;
 
 import SuperDuperMegaProject.Rustam.DTO.Product;
+import SuperDuperMegaProject.Rustam.DTO.ResponseDto;
 import SuperDuperMegaProject.Rustam.DTO.UpdateBalanceRequest;
 import SuperDuperMegaProject.Rustam.DTO.User;
 import SuperDuperMegaProject.Rustam.Entity.Transaction;
@@ -11,6 +12,7 @@ import SuperDuperMegaProject.Rustam.Constants.ReplyType;
 import SuperDuperMegaProject.Rustam.QueueConfiguration.Config;
 import SuperDuperMegaProject.Rustam.QueueMessage.CommandQueueMessage;
 import SuperDuperMegaProject.Rustam.Service.TransactionService;
+import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -55,7 +57,10 @@ public class CommandConsumer {
         this.productIds = message.productIds;
         this.amountOfProducts = message.amountOfProducts;
 
-        ResponseEntity<?> userResponse = this.userFeign.getUser(this.userId);
+        this.userFeign.getUser(this.userId);
+
+        ResponseEntity<?> userResponse;
+        userResponse = this.userFeign.getUser(this.userId);
 
         // ERROR: User doesn't exist
         if(
@@ -67,7 +72,10 @@ public class CommandConsumer {
             return;
         }
 
-        User user = (User) userResponse.getBody();
+        ModelMapper modelMapper = new ModelMapper();
+
+        ResponseDto responseDto = modelMapper.map(userResponse.getBody(), ResponseDto.class);
+        User user = modelMapper.map(responseDto.getBody(), User.class);
 
         if(user == null){
             throw new Exception("user from response is pointing to null");
@@ -97,7 +105,8 @@ public class CommandConsumer {
                 return;
             }
 
-            product = (Product) productResponse.getBody();
+            responseDto = modelMapper.map(productResponse.getBody(), ResponseDto.class);
+            product = modelMapper.map(responseDto.getBody(), Product.class);
 
             if(product == null){
                 throw new Exception("product form response is pointing to null");
@@ -126,12 +135,14 @@ public class CommandConsumer {
         this._createSuccessTransactionRecords();
 
         for(int i = 0; i < this.productIds.size(); i++){
+            UpdateBalanceRequest updateBalanceRequest = new UpdateBalanceRequest(
+                    String.valueOf(this.userId),
+                    String.valueOf(this.productIds.get(i)),
+                    String.valueOf(this.amountOfProducts.get(i))
+            );
+
             this.userFeign.updateBalance(
-                    new UpdateBalanceRequest(
-                            this.userId + "",
-                            this.productIds.get(i) + "",
-                            this.amountOfProducts.get(i) + ""
-                    )
+                    updateBalanceRequest
             );
         }
 
