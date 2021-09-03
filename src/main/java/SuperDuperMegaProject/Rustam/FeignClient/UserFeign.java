@@ -10,9 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
-import java.util.Optional;
 
-@FeignClient(name = "User", url = "localhost:8000/")
+@FeignClient(name = "User", url = "localhost:8000/", configuration = FeignConfiguration.class)
 public interface UserFeign {
 
     @RequestMapping(method = RequestMethod.GET, value = "/user/{id}")

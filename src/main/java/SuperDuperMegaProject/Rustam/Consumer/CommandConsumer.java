@@ -15,6 +15,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -45,6 +46,7 @@ public class CommandConsumer {
         this.productFeign = productFeign;
         this.replyProducer = replyProducer;
         this.replyType = replyType;
+        this.products = new ArrayList<Product>();
     }
 
     @RabbitListener(queues = Config.COMMAND_QUEUE_NAME)
@@ -56,12 +58,13 @@ public class CommandConsumer {
         ResponseEntity<?> userResponse = this.userFeign.getUser(this.userId);
 
         // ERROR: User doesn't exist
-        if(userResponse.getStatusCode().is4xxClientError()){
+        if(
+                userResponse.getStatusCode().is4xxClientError()
+                        || userResponse.getStatusCode().is5xxServerError()
+        ){
+            this._createErrorTransactionRecords();
             this.replyProducer.reply(this.replyType.ERROR);
-            throw new Exception("Get user: Client Error");
-        }else if (userResponse.getStatusCode().is5xxServerError()){
-            this.replyProducer.reply(this.replyType.ERROR);
-            throw new Exception("Get user: Server error");
+            return;
         }
 
         User user = (User) userResponse.getBody();
@@ -85,14 +88,13 @@ public class CommandConsumer {
             ResponseEntity<?> productResponse = this.productFeign.getProduct(productIds.get(i));
 
             // ERROR: Certain product doesn't exist
-            if(productResponse.getStatusCode().is4xxClientError()){
+            if(
+                    productResponse.getStatusCode().is4xxClientError()
+                            || productResponse.getStatusCode().is5xxServerError()
+            ){
                 this._createErrorTransactionRecords();
                 this.replyProducer.reply(this.replyType.ERROR);
-                throw new Exception("Get product: Client Error");
-            }else if (productResponse.getStatusCode().is5xxServerError()){
-                this._createErrorTransactionRecords();
-                this.replyProducer.reply(this.replyType.ERROR);
-                throw new Exception("Get product: Server error");
+                return;
             }
 
             product = (Product) productResponse.getBody();
@@ -124,18 +126,13 @@ public class CommandConsumer {
         this._createSuccessTransactionRecords();
 
         for(int i = 0; i < this.productIds.size(); i++){
-            ResponseEntity<?> result = this.userFeign.updateBalance(
+            this.userFeign.updateBalance(
                     new UpdateBalanceRequest(
                             this.userId + "",
                             this.productIds.get(i) + "",
                             this.amountOfProducts.get(i) + ""
                     )
             );
-            if(result.getStatusCode().is4xxClientError()){
-                throw new Exception("Update user balance: Client error");
-            }else if (result.getStatusCode().is5xxServerError()){
-                throw new Exception("Update user balance: Server error");
-            }
         }
 
         this.replyProducer.reply(this.replyType.SUCCESS);
