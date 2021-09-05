@@ -2,6 +2,7 @@ package SuperDuperMegaProject.Rustam.QueueConfiguration;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -21,6 +22,10 @@ public class Config {
     public static final String COMMAND_EXCHANGE_TOPIC = "COMMAND_EXCHANGE";
     public static final String COMMAND_ROUTING_KEY = "COMMAND_ROUTING_KEY";
 
+    public static final String DEAD_LETTER_QUEUE_NAME = "DEAD_LETTER_QUEUE_NAME";
+    public static final String DEAD_LETTER_QUEUE_EXCHANGE = "DEAD_LETTER_QUEUE_EXCHANGE";
+    public static final String DEAD_LETTER_QUEUE_ROUTING_KEY = "DEAD_LETTER_QUEUE_ROUTING_KEY";
+
 
     @Bean
     public Queue queueReply() {
@@ -28,7 +33,13 @@ public class Config {
     }
     @Bean
     public Queue queueCommand() {
-        return new Queue(Config.COMMAND_QUEUE_NAME);
+        return QueueBuilder.durable(Config.COMMAND_QUEUE_NAME)
+                .withArgument("x-dead-letter-exchange", Config.DEAD_LETTER_QUEUE_EXCHANGE)
+                .build();
+    }
+    @Bean
+    public Queue deadLetterQueue() {
+        return QueueBuilder.durable(Config.DEAD_LETTER_QUEUE_NAME).build();
     }
 
     @Bean
@@ -39,6 +50,10 @@ public class Config {
     public TopicExchange topicExchangeCommand(){
         return new TopicExchange(Config.COMMAND_EXCHANGE_TOPIC);
     }
+    @Bean
+    FanoutExchange deadLetterExchange() {
+        return new FanoutExchange(Config.DEAD_LETTER_QUEUE_EXCHANGE);
+    }
 
     @Bean
     public Binding bindingReply(@Qualifier("queueReply") Queue queue, @Qualifier("topicExchangeReply") TopicExchange topicExchange){
@@ -47,6 +62,11 @@ public class Config {
     @Bean
     public Binding bindingCommand(@Qualifier("queueCommand") Queue queue, @Qualifier("topicExchangeCommand") TopicExchange topicExchange){
         return BindingBuilder.bind(queue).to(topicExchange).with(Config.COMMAND_ROUTING_KEY);
+    }
+    @Bean
+    public Binding bindingDeadLetterQueue(){
+        return BindingBuilder.bind(deadLetterQueue())
+                .to(deadLetterExchange());
     }
 
     @Bean
