@@ -1,7 +1,7 @@
-package SuperDuperMegaProject.Rustam.FeignClient;
+package SuperDuperMegaProject.Rustam.feignClient;
 
-import SuperDuperMegaProject.Rustam.Exception.FeignClientException_4xx;
-import SuperDuperMegaProject.Rustam.Exception.FeignClientException_5xx;
+import SuperDuperMegaProject.Rustam.exception.FeignClientException_4xx;
+import SuperDuperMegaProject.Rustam.exception.FeignClientException_5xx;
 import feign.Response;
 import feign.codec.ErrorDecoder;
 import org.springframework.http.HttpStatus;

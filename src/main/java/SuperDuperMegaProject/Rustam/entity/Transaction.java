@@ -1,4 +1,4 @@
-package SuperDuperMegaProject.Rustam.Entity;
+package SuperDuperMegaProject.Rustam.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;

@@ -1,6 +1,6 @@
-package SuperDuperMegaProject.Rustam.Consumer;
+package SuperDuperMegaProject.Rustam.consumer;
 
-import SuperDuperMegaProject.Rustam.QueueConfiguration.Config;
+import SuperDuperMegaProject.Rustam.queueConfiguration.Config;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 

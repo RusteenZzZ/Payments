@@ -1,4 +1,4 @@
-package SuperDuperMegaProject.Rustam.QueueConfiguration;
+package SuperDuperMegaProject.Rustam.queueConfiguration;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.core.Queue;

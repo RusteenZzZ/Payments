@@ -1,4 +1,4 @@
-package SuperDuperMegaProject.Rustam.QueueMessage;
+package SuperDuperMegaProject.Rustam.queueMessage;
 
 import java.util.List;
 

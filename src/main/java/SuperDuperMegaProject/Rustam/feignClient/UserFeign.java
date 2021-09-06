@@ -1,4 +1,4 @@
-package SuperDuperMegaProject.Rustam.FeignClient;
+package SuperDuperMegaProject.Rustam.feignClient;
 
 import SuperDuperMegaProject.Rustam.DTO.UpdateBalanceRequest;
 import org.springframework.cloud.openfeign.FeignClient;

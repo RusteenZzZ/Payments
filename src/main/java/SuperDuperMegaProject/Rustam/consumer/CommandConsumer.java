@@ -1,17 +1,17 @@
-package SuperDuperMegaProject.Rustam.Consumer;
+package SuperDuperMegaProject.Rustam.consumer;
 
 import SuperDuperMegaProject.Rustam.DTO.Product;
 import SuperDuperMegaProject.Rustam.DTO.ResponseDto;
 import SuperDuperMegaProject.Rustam.DTO.UpdateBalanceRequest;
 import SuperDuperMegaProject.Rustam.DTO.User;
-import SuperDuperMegaProject.Rustam.Entity.Transaction;
-import SuperDuperMegaProject.Rustam.FeignClient.ProductFeign;
-import SuperDuperMegaProject.Rustam.FeignClient.UserFeign;
-import SuperDuperMegaProject.Rustam.Producer.ReplyProducer;
-import SuperDuperMegaProject.Rustam.Constants.ReplyType;
-import SuperDuperMegaProject.Rustam.QueueConfiguration.Config;
-import SuperDuperMegaProject.Rustam.QueueMessage.CommandQueueMessage;
-import SuperDuperMegaProject.Rustam.Service.TransactionService;
+import SuperDuperMegaProject.Rustam.entity.Transaction;
+import SuperDuperMegaProject.Rustam.feignClient.ProductFeign;
+import SuperDuperMegaProject.Rustam.feignClient.UserFeign;
+import SuperDuperMegaProject.Rustam.producer.ReplyProducer;
+import SuperDuperMegaProject.Rustam.constants.ReplyType;
+import SuperDuperMegaProject.Rustam.queueConfiguration.Config;
+import SuperDuperMegaProject.Rustam.queueMessage.CommandQueueMessage;
+import SuperDuperMegaProject.Rustam.service.TransactionService;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.http.ResponseEntity;

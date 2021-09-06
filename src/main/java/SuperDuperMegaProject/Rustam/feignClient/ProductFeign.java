@@ -1,10 +1,7 @@
-package SuperDuperMegaProject.Rustam.FeignClient;
+package SuperDuperMegaProject.Rustam.feignClient;
 
-import SuperDuperMegaProject.Rustam.Exception.FeignClientException_4xx;
-import SuperDuperMegaProject.Rustam.Exception.FeignClientException_5xx;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

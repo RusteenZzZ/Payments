@@ -1,4 +1,4 @@
-package SuperDuperMegaProject.Rustam.Constants;
+package SuperDuperMegaProject.Rustam.constants;
 
 import org.springframework.context.annotation.Configuration;
 

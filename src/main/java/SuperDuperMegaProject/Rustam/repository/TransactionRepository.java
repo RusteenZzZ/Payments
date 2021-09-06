@@ -1,6 +1,6 @@
-package SuperDuperMegaProject.Rustam.Repository;
+package SuperDuperMegaProject.Rustam.repository;
 
-import SuperDuperMegaProject.Rustam.Entity.Transaction;
+import SuperDuperMegaProject.Rustam.entity.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {

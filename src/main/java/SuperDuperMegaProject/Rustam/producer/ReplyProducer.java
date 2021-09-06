@@ -1,7 +1,7 @@
-package SuperDuperMegaProject.Rustam.Producer;
+package SuperDuperMegaProject.Rustam.producer;
 
-import SuperDuperMegaProject.Rustam.QueueConfiguration.Config;
-import SuperDuperMegaProject.Rustam.QueueMessage.ReplyQueueMessage;
+import SuperDuperMegaProject.Rustam.queueConfiguration.Config;
+import SuperDuperMegaProject.Rustam.queueMessage.ReplyQueueMessage;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 

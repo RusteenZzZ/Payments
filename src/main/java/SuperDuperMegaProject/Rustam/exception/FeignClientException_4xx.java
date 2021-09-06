@@ -1,4 +1,4 @@
-package SuperDuperMegaProject.Rustam.Exception;
+package SuperDuperMegaProject.Rustam.exception;
 
 public class FeignClientException_4xx extends RuntimeException{
     public FeignClientException_4xx(String msg){

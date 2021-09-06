@@ -1,8 +1,8 @@
-package SuperDuperMegaProject.Rustam.Service.Impl;
+package SuperDuperMegaProject.Rustam.service.impl;
 
-import SuperDuperMegaProject.Rustam.Entity.Transaction;
-import SuperDuperMegaProject.Rustam.Repository.TransactionRepository;
-import SuperDuperMegaProject.Rustam.Service.TransactionService;
+import SuperDuperMegaProject.Rustam.entity.Transaction;
+import SuperDuperMegaProject.Rustam.repository.TransactionRepository;
+import SuperDuperMegaProject.Rustam.service.TransactionService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

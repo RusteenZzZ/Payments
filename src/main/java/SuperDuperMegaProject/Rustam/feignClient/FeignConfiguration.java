@@ -1,4 +1,4 @@
-package SuperDuperMegaProject.Rustam.FeignClient;
+package SuperDuperMegaProject.Rustam.feignClient;
 
 import feign.codec.ErrorDecoder;
 import org.springframework.context.annotation.Bean;
